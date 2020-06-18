@@ -8,6 +8,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import Nav from 'react-bootstrap/Nav';
 
 import DeleteNetwork from '../../app/requests/DeleteNetwork';
+import DeleteIpPool from '../../app/requests/DeleteIpPool';
 import DeleteIP from '../../app/requests/DeleteIP';
 import DeleteVlan from '../../app/requests/DeleteVlan';
 import DeleteDevice from '../../app/requests/DeleteDevice';
@@ -150,7 +151,25 @@ class TableBody extends React.Component {
                   </Nav.Item>)
             })
 
-            network_filter.push(<Nav key={this.props.all_item_names["Network"][0]} fill defaultActiveKey={this.state.network_filter} variant="tabs"> {network_tabs} </Nav>)
+            this.props.all_item_names["Pool"].map( (name) => {
+                network_tabs.push(
+                  <Nav.Item key={"Pool_"+name}>
+                    <Nav.Link
+                        eventKey={"Pool_"+name}
+                        name={"Pool_"+name}
+                        onClick={ this.onChangeNetworkFilter }
+                    >
+                        {"Pool "+name}
+                    </Nav.Link>
+                  </Nav.Item>)
+            })
+
+            network_filter.push(<Nav
+                                    key={this.props.all_item_names["Network"][0]}
+                                    fill defaultActiveKey={this.state.network_filter}
+                                    variant="tabs">
+                                        {network_tabs}
+                                </Nav>)
         }
 
         return ( network_filter)
@@ -188,6 +207,13 @@ class TableBody extends React.Component {
     RemoveRow(e) {
         if (window.confirm('Are you sure you wish to delete this item?')) {
             switch (this.props.active_tab) {
+                case 'pool':
+                    DeleteIpPool(e.target.id, this.props.auth_token).then( res => {
+                            this.props.refreshData(this.props.active_tab)
+                        }
+                    );
+                    break;
+
                 case 'net':
                     DeleteNetwork(e.target.id, this.props.auth_token).then( res => {
                             this.props.refreshData(this.props.active_tab)
@@ -300,7 +326,9 @@ class TableBody extends React.Component {
                         
                         if( (rows[i].Description !== "Gateway") &&
                             (rows[i].Description !== 'Broadcast') &&
-                            (rows[i].Description !== 'Network') )
+                            (rows[i].Description !== 'Network') &&
+                            (rows[i].Description !== 'First_address_of_the_pool') &&
+                            (rows[i].Description !== 'Last_address_of_the_pool'))
                         {
                             remove_and_edit_buttons.push(
                                 <td key={this.props.auth_user}>

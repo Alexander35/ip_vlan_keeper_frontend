@@ -3,6 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
 import UpdateNetwork from '../../app/requests/UpdateNetwork';
+import UpdateIpPool from '../../app/requests/UpdateIpPool';
 import UpdateDevice from '../../app/requests/UpdateDevice';
 import UpdateVlan from '../../app/requests/UpdateVlan';
 import UpdateIP from '../../app/requests/UpdateIP';
@@ -81,6 +82,22 @@ class UpdateItemPanel extends React.Component {
     }
 
     onUpdateClick = (e) => {
+
+        if(this.props.active_tab === 'pool') {
+            UpdateIpPool(this.state.column_values['Name'],
+                this.state.column_values['Description'],
+                this.props.auth_user,
+                this.props.auth_token
+                ).then( res => {
+                            if('response' in res)
+                                this.setState({error_show: true,
+                                        error_data: JSON.stringify(res.response.data),
+                                        error_status: res.response.status,
+                                        error_status_text: res.response.statusText})
+                            else
+                                this.props.onClick()
+                    });
+        }
 
         if(this.props.active_tab === 'net') {
             UpdateNetwork(this.state.column_values['Name'],
@@ -198,7 +215,9 @@ class UpdateItemPanel extends React.Component {
                      (property === 'Owner' ) || 
                      (property === 'Gateway' ) || 
                      (property === 'Broadcast' ) ||
-                     (property === 'Network' ))
+                     (property === 'Network' ) ||
+                     (property === 'First' ) ||
+                     (property === 'Last' ))
                       properties_list.push(<td key={property}><Form.Control plaintext readOnly defaultValue={this.state.column_values[property]} /></td>)
                   else
                       properties_list.push(

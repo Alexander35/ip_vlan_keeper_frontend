@@ -2,6 +2,7 @@ import React from 'react';
 import Nav from 'react-bootstrap/Nav';
 import { connect } from "react-redux";
 import GetAllNetworks from "../../app/requests/GetAllNetworks";
+import GetAllIpPools from "../../app/requests/GetAllIpPools";
 import GetAllIPs from "../../app/requests/GetAllIPs";
 import GetAllVlans from "../../app/requests/GetAllVlans";
 import GetAllDevices from "../../app/requests/GetAllDevices";
@@ -23,6 +24,10 @@ class Table extends React.Component {
 
     componentDidMount() {
         this.refreshData("net")
+    }
+
+    onAllIpPoolsClick = (e) => {
+        this.setState({active_tab: "pool"}, this.refreshData("pool"));
     }
 
     onAllNetworksClick = (e) => {
@@ -49,6 +54,10 @@ class Table extends React.Component {
     {
         GetAllNames().then( res => {
                 this.setState({all_item_names: res});
+            });
+        if(active_tab === "pool")
+            GetAllIpPools().then( res => {
+                this.setState({table_data: res});
             });
         if(active_tab === "net")
             GetAllNetworks().then( res => {
@@ -78,21 +87,24 @@ class Table extends React.Component {
 
         return(
             <>        
-                <Nav fill defaultActiveKey="link-0" variant="tabs">
+                <Nav fill defaultActiveKey="link-1" variant="tabs">
                   <Nav.Item>
-                    <Nav.Link eventKey="link-0"  onClick={ this.onAllNetworksClick }>Networks</Nav.Link>
+                    <Nav.Link eventKey="link-0"  onClick={ this.onAllIpPoolsClick }>Pools</Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Nav.Link eventKey="link-1" onClick={ this.onAllIPsClick }>IPs</Nav.Link>
+                    <Nav.Link eventKey="link-1"  onClick={ this.onAllNetworksClick }>Networks</Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Nav.Link eventKey="link-2" onClick={ this.onAllVlansClick }>Vlans</Nav.Link>
+                    <Nav.Link eventKey="link-2" onClick={ this.onAllIPsClick }>IPs</Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Nav.Link eventKey="link-3" onClick={ this.onAllDevicesClick }>Devices</Nav.Link>
+                    <Nav.Link eventKey="link-3" onClick={ this.onAllVlansClick }>Vlans</Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Nav.Link eventKey="link-4" onClick={ this.onAllDeviceInterfacesClick }>Device Interfaces</Nav.Link>
+                    <Nav.Link eventKey="link-4" onClick={ this.onAllDevicesClick }>Devices</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="link-5" onClick={ this.onAllDeviceInterfacesClick }>Device Interfaces</Nav.Link>
                   </Nav.Item>
                 </Nav>
                 <TableBody

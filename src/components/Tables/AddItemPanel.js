@@ -6,6 +6,7 @@ import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 
 import AddNetwork from '../../app/requests/AddNetwork';
+import AddIpPool from '../../app/requests/AddIpPool';
 import AddDevice from '../../app/requests/AddDevice';
 import AddVlan from '../../app/requests/AddVlan';
 import AddIP from '../../app/requests/AddIP';
@@ -70,9 +71,20 @@ class AddItemPanel extends React.Component {
     }
 
     onAddClick = (e) => {
-
-
-
+        if(this.props.active_tab === 'pool') {
+            AddIpPool(this.state.column_values['Name'],
+                this.state.column_values['Description'],
+                this.props.auth_user,
+                this.props.auth_token
+                ).then( res => {
+                            if('response' in res)
+                                this.setState({error_show: true,
+                                        error_data: JSON.stringify(res.response.data),
+                                        error_status: res.response.status,
+                                        error_status_text: res.response.statusText})
+                            this.props.onClick()
+                    });
+        }
         if(this.props.active_tab === 'net') {
             AddNetwork(this.state.column_values['Name'],
                 this.state.column_values['Gateway'],
@@ -165,7 +177,9 @@ class AddItemPanel extends React.Component {
               if ((property !== 'created_at') && 
                     (property !== 'updated_at') && 
                      (property !== 'Owner') &&
-                     (property !== 'Broadcast')) {
+                     (property !== 'Broadcast') &&
+                     (property !== 'First') &&
+                     (property !== 'Last')) {
 
                 if((this.props.free_ips_by_network !== undefined) &&
                    (this.props.network_filter !== 'all') &&
