@@ -106,6 +106,7 @@ class AddItemPanel extends React.Component {
         if(this.props.active_tab === 'ip') {
             AddIP(this.state.column_values['Name'],
                 this.props.network_filter === 'all' ? this.state.column_values['Network'] : this.props.network_filter,
+                this.props.auth_user,
                 this.state.column_values['Device_interface'],
                 this.state.column_values['Description'],
                 this.props.auth_token
